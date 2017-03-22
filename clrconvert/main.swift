@@ -82,7 +82,7 @@ var template2 = try! String(contentsOf: home.appendingPathComponent("UIColor+Sch
 
 
 
-template1 = String(format: template1, colorCases(colorNames), colorNames.map(method).joined(separator: "\n"))
+template1 = String(format: template1, colorCases(colorNames), colorSchemeName, colorNames.map(method).joined(separator: "\n"))
 template2 = String(format: template2, colorSchemeName, hex.joined(separator: ","))
 
 try! template1.write(to: URL(fileURLWithPath:output).appendingPathComponent("UIColor+CS.swift"), atomically: true, encoding: .utf8)
