@@ -40,15 +40,16 @@ func lowerFirstLetter(_ string: String) -> String {
 func colorScheme(_ colorList: NSColorList) -> [String:NSColor] {
 	var colorScheme = [String: NSColor]()
 	for key in colorList.allKeys {
-		 colorScheme[upperFirstLetter(key)] = colorList.color(withKey: key)?.usingColorSpace(NSColorSpace.deviceRGB)!
+		 colorScheme[upperFirstLetter(key)] = colorList.color(withKey: key)!.usingColorSpace(NSColorSpace.sRGB)!
 	}
+	
 	return colorScheme
 }
 
 func method(_ colorName: String) -> String {
 	return "\tpublic class var \(lowerFirstLetter(colorName)): UIColor {\n" +
 		"\t\tget {\n" +
-		"\t\t\treturn UIColor(number: g_currentScheme![CSColorName.\(upperFirstLetter(colorName)).rawValue])\n" +
+		"\t\t\treturn g_currentScheme![CSColorName.\(upperFirstLetter(colorName)).rawValue]\n" +
 		"\t\t}\n\t}\n"
 }
 
@@ -70,10 +71,12 @@ var s = colorNames.map { (s) in
 	return method(s)
 }
 
-var hex = [String]()
+var colorLiterals = [String]()
 
 for key in colorNames {
-	hex.append(cs[key]!.hexString)
+	var rgba: [CGFloat] = [0,0,0,0]
+	cs[key]!.getComponents(&rgba)
+	colorLiterals.append("#" + "colorLiteral(red: \(rgba[0]), green: \(rgba[1]), blue: \(rgba[2]), alpha: \(rgba[3]))")
 }
 
 let home = URL(fileURLWithPath: CommandLine.arguments[0]).deletingLastPathComponent()
@@ -83,7 +86,7 @@ var template2 = try! String(contentsOf: home.appendingPathComponent("UIColor+Sch
 
 
 template1 = String(format: template1, colorCases(colorNames), colorSchemeName, colorNames.map(method).joined(separator: "\n"))
-template2 = String(format: template2, colorSchemeName, hex.joined(separator: ","))
+template2 = String(format: template2, colorSchemeName, colorLiterals.joined(separator: ","))
 
 try! template1.write(to: URL(fileURLWithPath:output).appendingPathComponent("UIColor+CS.swift"), atomically: true, encoding: .utf8)
 try! template2.write(to: URL(fileURLWithPath:output).appendingPathComponent("UIColor+\(colorSchemeName).swift"), atomically: true, encoding: .utf8)

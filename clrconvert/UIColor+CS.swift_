@@ -11,10 +11,10 @@ private enum CSColorName: Int {
 %@
 }
 
-var g_currentScheme: [UInt]? = CSScheme.%@
+var g_currentScheme: [UIColor]? = CSScheme.%@
 
 public struct CSScheme {
-	static var currentScheme: [UInt]? {
+	static var currentScheme: [UIColor]? {
 		get {
 			return g_currentScheme
 		}
