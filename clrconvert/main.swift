@@ -12,9 +12,11 @@ guard CommandLine.arguments.count == 3 else {exit(1)}
 
 extension NSColor {
 	public var hexString: String {
-		var rgba: [CGFloat] = [0, 0, 0, 0]
-		self.getRed(&rgba[0], green: &rgba[1], blue: &rgba[2], alpha: &rgba[3])
+		let rgba = UnsafeMutablePointer<CGFloat>.allocate(capacity: 4)
+		defer {rgba.deallocate(capacity: 4)}
 		
+		self.getRed(&rgba[0], green: &rgba[1], blue: &rgba[2], alpha: &rgba[3])
+
 		for i in 0..<4 {
 			rgba[i] = round(rgba[i] * 255.0)
 		}
@@ -40,7 +42,7 @@ func lowerFirstLetter(_ string: String) -> String {
 func colorScheme(_ colorList: NSColorList) -> [String:NSColor] {
 	var colorScheme = [String: NSColor]()
 	for key in colorList.allKeys {
-		 colorScheme[upperFirstLetter(key)] = colorList.color(withKey: key)!.usingColorSpace(NSColorSpace.sRGB)!
+		 colorScheme[upperFirstLetter(key.rawValue)] = colorList.color(withKey: key)!.usingColorSpace(NSColorSpace.sRGB)!
 	}
 	
 	return colorScheme
@@ -61,7 +63,7 @@ func colorCases(_ colorNames: [String]) -> String {
 
 let input = CommandLine.arguments[1]
 let output = CommandLine.arguments[2]
-let colorList = NSColorList(name: "CS", fromFile: input)!
+let colorList = NSColorList(name: NSColorList.Name(rawValue: "CS"), fromFile: input)!
 let colorSchemeName = upperFirstLetter(URL(fileURLWithPath: input).deletingPathExtension().lastPathComponent)
 
 let cs = colorScheme(colorList)
