@@ -13,7 +13,7 @@ guard CommandLine.arguments.count == 3 else {exit(1)}
 extension NSColor {
 	public var hexString: String {
 		let rgba = UnsafeMutablePointer<CGFloat>.allocate(capacity: 4)
-		defer {rgba.deallocate(capacity: 4)}
+		defer {rgba.deallocate()}
 		
 		self.getRed(&rgba[0], green: &rgba[1], blue: &rgba[2], alpha: &rgba[3])
 
@@ -28,14 +28,14 @@ extension NSColor {
 func upperFirstLetter(_ string: String) -> String {
 	var s = string
 	let r = Range(uncheckedBounds: (lower: s.startIndex, upper: s.index(after: s.startIndex)))
-	s.replaceSubrange(r, with: s.substring(with: r).uppercased())
+	s.replaceSubrange(r, with: s[r].uppercased())
 	return s
 }
 
 func lowerFirstLetter(_ string: String) -> String {
 	var s = string
 	let r = Range(uncheckedBounds: (lower: s.startIndex, upper: s.index(after: s.startIndex)))
-	s.replaceSubrange(r, with: s.substring(with: r).lowercased())
+	s.replaceSubrange(r, with: s[r].lowercased())
 	return s
 }
 
